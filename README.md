@@ -18,7 +18,9 @@ WARNING: This is a development server. Do not use it in a production deployment.
  * Running on http://127.0.0.1:5000
 ```
 
-[Install MongoDB](https://www.mongodb.com/docs/v4.2/tutorial/install-mongodb-on-os-x/) and run it
+[Install
+MongoDB](https://www.mongodb.com/docs/v4.2/tutorial/install-mongodb-on-os-x/)
+and run it
 ```bash
 $ brew services start mongodb-community@4.4
 ==> Successfully started `mongodb-community@4.4` (label: homebrew.mxcl.mongodb-community@4.4)
@@ -26,7 +28,8 @@ $ brew services start mongodb-community@4.4
 
 ## Docker & Docker Compose
 
-Install [docker (docker desktop) and docker-compose](https://docs.docker.com/desktop/)
+Install [docker (docker desktop) and
+docker-compose](https://docs.docker.com/desktop/)
 
 Build the image and run the container
 ```bash
@@ -53,6 +56,9 @@ $ docker ps
 # stop a container
 $ docker stop <container-id>
 
+# remove a container
+$ docker rm <container-id>
+
 # open a bash shell inside the container
 $ docker exec -it <container-id> bash
 
@@ -63,7 +69,24 @@ $ docker logs <container-id>
 $ docker login
 ```
 
-Create a repository [vchrombie/todo-flask-mongodb](https://hub.docker.com/repository/docker/vchrombie/todo-flask-mongodb) on Docker Hub and push the image
+Few other docker-compose commands
+```bash
+# check the running containers
+$ docker-compose ps
+
+# stop the containers
+$ docker-compose down
+
+# remove the volumes
+$ docker-compose down -v
+
+# build the images and run the containers
+$ docker-compose up --build
+```
+
+Create a repository
+[vchrombie/todo-flask-mongodb](https://hub.docker.com/repository/docker/vchrombie/todo-flask-mongodb)
+on Docker Hub and push the image
 ```bash
 $ docker tag todo-flask-mongodb:latest vchrombie/todo-flask-mongodb:latest
 $ docker push vchrombie/todo-flask-mongodb:latest
