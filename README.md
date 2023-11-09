@@ -6,10 +6,12 @@ Create a virtual environment, install the dependencies and run the app
 ```bash
 $ python -m venv .venv
 $ source .venv/bin/activate
-$ pip install -r requirements.txt
+(.venv) $ cd todo/
+(.venv) $ pip install -r requirements.txt
 ```
 ```bash
-$ python app.py
+(.venv) $ cd todo/
+(.venv) $ python app.py
  * Serving Flask app 'app'
  * Debug mode: on
 WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
