@@ -91,3 +91,70 @@ on Docker Hub and push the image
 $ docker tag todo-flask-mongodb:latest vchrombie/todo-flask-mongodb:latest
 $ docker push vchrombie/todo-flask-mongodb:latest
 ```
+
+## Minikube & Kubernetes
+
+Install [minikube](https://minikube.sigs.k8s.io/docs/start/) and
+[kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
+
+```bash
+# start minikube
+$ minikube start
+
+# check the status
+$ minikube status
+
+# connect to LoadBalancer services (has to be running)
+$ minikube tunnel
+```
+
+Create a
+[deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)
+and a
+[service](https://kubernetes.io/docs/concepts/services-networking/service/) for
+the todo-flask app and the mongodb (with pvc)
+```bash
+# apply the deployment and service files
+$ kubectl apply -f k8s/flask-deployment.yml
+$ kubectl apply -f k8s/flask-service.yml
+$ kubectl apply -f k8s/mongodb-deployment.yml
+$ kubectl apply -f k8s/mongodb-service.yml
+```
+
+Get the list of persistent volume claims and pods
+```bash
+$ kubectl get pvc
+$ kubectl get pods
+```
+
+Few other kubectl commands
+```bash
+# check the logs of the pods
+$ kubectl logs <pod-name>
+
+# get the list of services and deployments
+$ kubectl get services
+$ kubectl get deployments
+
+# get the list of all resources
+$ kubectl get all
+
+# delete a service or a deployment
+$ kubectl delete service <service-name>
+$ kubectl delete deployment <deployment-name>
+
+# delete all resources
+$ kubectl delete all --all
+```
+
+Few other minikube commands
+```bash
+# check the dashboard
+$ minikube dashboard
+
+# stop minikube
+$ minikube stop
+
+# delete minikube
+$ minikube delete
+```
