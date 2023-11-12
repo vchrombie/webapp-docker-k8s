@@ -25,3 +25,19 @@ spec:
         image: vchrombie/todo-flask-mongodb:latest
         ports:
         - containerPort: 5000
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 5000
+          initialDelaySeconds: 15
+          timeoutSeconds: 2
+          periodSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /readiness
+            port: 5000
+          initialDelaySeconds: 5
+          timeoutSeconds: 2
+          periodSeconds: 5
+          successThreshold: 1

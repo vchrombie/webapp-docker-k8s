@@ -356,3 +356,89 @@ $ kubectl rollout undo deployment/<deployment-name>
 # rollback to a specific revision
 $ kubectl rollout undo deployment/<deployment-name> --to-revision=<revision-number>
 ```
+
+## Health Monitoring
+
+Update the deployment for the todo-flask app to include the [liveness
+probe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)
+```yaml
+    spec:
+      containers:
+      - name: todo-flask
+        . . .
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 5000
+          initialDelaySeconds: 15
+          timeoutSeconds: 2
+          periodSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /readiness
+            port: 5000
+          initialDelaySeconds: 5
+          timeoutSeconds: 2
+          periodSeconds: 5
+          successThreshold: 1
+```
+
+Apply the deployment
+```bash
+$ kubectl apply -f k8s/flask-deployment.yml
+```
+
+Update the code of the [todo-flask app](./todo/app.py) to simulate the verification of the liveness and readiness
+
+Both the liveness and readiness endpoints return a `200 OK` response \
+docker image `vchrombie/todo-flask-mongodb:live-ready`
+```py
+@app.route('/healthz')
+def healthz():
+    return Response("OK", status=200)
+
+@app.route('/readiness')
+def readiness():
+    return Response("OK", status=200)
+```
+
+```bash
+$ docker buildx build --platform linux/amd64,linux/arm64 -t vchrombie/todo-flask-mongodb:live-ready -f ./docker/Dockerfile . --push
+
+$ kubectl set image deployment/todo-flask todo-flask=vchrombie/todo-flask-mongodb:live-ready
+```
+
+The liveness endpoint returns a `500 Internal Server Error` response \
+docker image `vchrombie/todo-flask-mongodb:check-liveliness`
+```py
+@app.route('/healthz')
+def healthz():
+    return Response("Internal Server Error", status=500)
+
+@app.route('/readiness')
+def readiness():
+	return Response("OK", status=200)
+```
+
+The readiness endpoint returns a `500 Internal Server Error` response \
+docker image `vchrombie/todo-flask-mongodb:check-readiness`
+```py
+@app.route('/healthz')
+def healthz():
+    return Response("OK", status=200)
+
+@app.route('/readiness')
+def readiness():
+	return Response("Internal Server Error", status=500)
+```
+
+Few other commands
+```bash
+# check for liveliness and readiness
+$ kubectl describe pods | grep -i live
+$ kubectl describe pods | grep -i ready
+
+# check the available endpoints
+$ kubectl describe svc | grep Endpoints
+```
