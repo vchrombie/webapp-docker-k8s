@@ -158,3 +158,93 @@ $ minikube stop
 # delete minikube
 $ minikube delete
 ```
+
+## AWS EKS
+
+Install
+[eksctl](https://docs.aws.amazon.com/eks/latest/userguide/getting-started-eksctl.html)
+and [aws
+cli](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
+
+Create two IAM roles, and assigned the required policies to them.
+- `eksClusterRole`
+    - `AmazonEKSClusterPolicy`
+    - `AmazonEC2ContainerRegistryReadOnly`
+    - `AmazonEKSWorkerNodePolicy`
+    - `eksFullAccess`
+- `eksClusterNodeGroupsRole`
+    - `AmazonEC2ContainerRegistryReadOnly`
+    - `AmazonEKSWorkerNodePolicy`
+    - `AmazonEC2FullAccess`
+
+Create an EKS cluster using eksctl
+```bash
+$ eksctl create cluster --name todo-flask-mongodb --region us-east-1 --nodegroup-name standard-workers --node-type t2.medium --nodes 1
+```
+
+Attatch the `eksClusterRole` to the cluster and `eksClusterNodeGroupsRole` to
+the node group using the AWS console.
+
+Configure `kubectl` to use the cluster
+```bash
+$ aws eks update-kubeconfig --name todo-flask-mongodb --region us-east-1
+```
+
+Apply the deployments for the todo-flask app and the mongodb
+```bash
+$ kubectl apply -f k8s/flask-deployment.yml
+$ kubectl apply -f k8s/mongodb-deployment.yml
+```
+
+Apply the services for the todo-flask app (with LoadBalancer) and the mongodb
+(with pvc)
+```bash
+$ kubectl apply -f k8s/flask-service.yml
+$ kubectl apply -f k8s/mongodb-service.yml
+```
+
+> `mongodb-pvc` is waiting for a volume to be created by the external
+> provisioner `ebs.csi.aws.com`. This indicates that the AWS EBS CSI driver is
+> not installed on the cluster.
+```bash
+# install the AWS EBS CSI driver
+$ kubectl apply -k "github.com/kubernetes-sigs/aws-ebs-csi-driver/deploy/kubernetes/overlays/stable/ecr/"
+
+# verify if the driver is installed
+$ kubectl get pods -n kube-system | grep ebs-csi
+```
+
+Get the list of persistent volume claims and their status
+```bash
+$ kubectl get pvc
+```
+
+> `todo-flask` pods are in a `CrashLoopBackOff` status, which is related to an
+> architecture mismatch between the image and the host. Built the image which
+> supports multi-architecture builds and pushed it to Docker Hub.
+```bash
+# create a new builder which supports multi-architecture builds
+$ docker buildx create --name mybuilder --use
+# start up the builder instance
+$ docker buildx inspect --bootstrap
+
+# build and push the image with the new builder
+$ docker buildx build --platform linux/amd64,linux/arm64 -t vchrombie/todo-flask-mongodb:latest . --push
+```
+
+Get the LoadBalancer URL
+```bash
+$ kubectl get svc
+```
+
+Few other required commands
+```bash
+# get the status of the cluster
+$ eksctl get cluster --name <cluster-name> --region <region>
+
+# get the list of nodes and their status
+$ kubectl get nodes
+
+# get the list of pods and their status
+$ kubectl get pods
+```
