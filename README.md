@@ -312,6 +312,8 @@ $ kubectl delete pod <pod-name>
 Update the deployment for the todo-flask app to include the [rolling update
 configuration](https://kubernetes.io/docs/tutorials/kubernetes-basics/update/update-intro/)
 ```yaml
+spec:
+  replicas: 2
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -332,7 +334,7 @@ diff --git a/todo/static/assets/style.css b/todo/static/assets/style.css
 ```
 
 ```bash
-# built the image, pushed it to docker hub
+# built the image with the new changes, push it to docker hub
 $ docker buildx build --platform linux/amd64,linux/arm64 -t vchrombie/todo-flask-mongodb:v2 -f ./docker/Dockerfile . --push
 
 # update the deployment to use the new image
