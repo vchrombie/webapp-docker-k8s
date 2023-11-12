@@ -269,7 +269,7 @@ for the todo-flask app
 $ kubectl apply -f k8s/flask-rc.yml
 ```
 
-The initial number of replicas can be set in the `flask-rc.yml` file
+Initial number of replicas can be set in the `flask-rc.yml` file
 ```yaml
 spec:
   replicas: 1
@@ -294,4 +294,54 @@ $ kubectl get pods
 
 # delete a pod
 $ kubectl delete pod <pod-name>
+```
+
+## Rolling Update Strategy
+
+Update the deployment for the todo-flask app to include the rolling update
+configuration and a new image
+```yaml
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+```
+
+Apply the deployment
+```bash
+$ kubectl apply -f k8s/flask-deployment.yml
+```
+
+Updated the css to test the rolling update
+```
+diff --git a/todo/static/assets/style.css b/todo/static/assets/style.css
+-    background-color: #333;
++    background-color: #0000ff;
+```
+
+```bash
+# built the image, pushed it to docker hub
+$ docker buildx build --platform linux/amd64,linux/arm64 -t vchrombie/todo-flask-mongodb:v2 -f ./docker/Dockerfile . --push
+
+# update the deployment to use the new image
+$ kubectl set image deployment/todo-flask todo-flask=vchrombie/todo-flask-mongodb:v2
+
+# check the rollout status
+$ kubectl rollout status deployment/todo-flask
+
+# verify if the new image is running
+$ kubectl describe pods | grep Image
+```
+
+Few other commands
+```bash
+# check the rollout history
+$ kubectl rollout history deployment/<deployment-name>
+
+# undo the rollout
+$ kubectl rollout undo deployment/<deployment-name>
+
+# rollback to a specific revision
+$ kubectl rollout undo deployment/<deployment-name> --to-revision=<revision-number>
 ```
