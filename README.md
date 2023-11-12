@@ -33,7 +33,7 @@ docker-compose](https://docs.docker.com/desktop/)
 
 Build the image and run the container
 ```bash
-$ docker build -t todo-flask-mongodb .
+$ docker build -t todo-flask-mongodb -f ./docker/Dockerfile .
 $ docker run -p 5000:5000 todo-flask-mongodb
 ```
 
@@ -240,7 +240,7 @@ $ docker buildx create --name mybuilder --use
 $ docker buildx inspect --bootstrap
 
 # build and push the image with the new builder
-$ docker buildx build --platform linux/amd64,linux/arm64 -t vchrombie/todo-flask-mongodb:latest . --push
+$ docker buildx build --platform linux/amd64,linux/arm64 -t vchrombie/todo-flask-mongodb:latest -f ./docker/Dockerfile . --push
 ```
 
 Get the LoadBalancer URL
