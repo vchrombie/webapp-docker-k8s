@@ -119,6 +119,9 @@ $ kubectl apply -f k8s/flask-deployment.yml
 $ kubectl apply -f k8s/flask-service.yml
 $ kubectl apply -f k8s/mongodb-deployment.yml
 $ kubectl apply -f k8s/mongodb-service.yml
+
+# apply the persistent volume claim for mongodb
+$ kubectl apply -f k8s/mongodb-pvc.yml
 ```
 
 Get the list of persistent volume claims and pods
@@ -203,6 +206,11 @@ $ kubectl apply -f k8s/flask-service.yml
 $ kubectl apply -f k8s/mongodb-service.yml
 ```
 
+Apply the persistent volume claim for mongodb
+```bash
+$ kubectl apply -f k8s/mongodb-pvc.yml
+```
+
 > `mongodb-pvc` is waiting for a volume to be created by the external
 > provisioner `ebs.csi.aws.com`. This indicates that the AWS EBS CSI driver is
 > not installed on the cluster.
@@ -212,6 +220,9 @@ $ kubectl apply -k "github.com/kubernetes-sigs/aws-ebs-csi-driver/deploy/kuberne
 
 # verify if the driver is installed
 $ kubectl get pods -n kube-system | grep ebs-csi
+
+# check the drivers installed on the cluster
+$ kubectl get csidrivers
 ```
 
 Get the list of persistent volume claims and their status
