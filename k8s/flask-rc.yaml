@@ -1,0 +1,21 @@
+apiVersion: v1
+
+kind: ReplicationController
+
+metadata:
+  name: todo-flask-rc
+
+spec:
+  replicas: 1
+  selector:
+    app: todo-flask
+  template:
+    metadata:
+      labels:
+        app: todo-flask
+    spec:
+      containers:
+      - name: todo-flask
+        image: vchrombie/todo-flask-mongodb:latest
+        ports:
+        - containerPort: 5000

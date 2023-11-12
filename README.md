@@ -248,3 +248,39 @@ $ kubectl get nodes
 # get the list of pods and their status
 $ kubectl get pods
 ```
+
+## Replication Controller
+
+Create a [replication
+controller](https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller/)
+for the todo-flask app
+```bash
+$ kubectl apply -f k8s/flask-rc.yml
+```
+
+The initial number of replicas can be set in the `flask-rc.yml` file
+```yaml
+spec:
+  replicas: 1
+```
+
+Scale the number of replicas
+```bash
+$ kubectl scale rc todo-flask-rc --replicas 0
+$ kubectl scale rc todo-flask-rc --replicas 2
+```
+
+Few other commands
+```bash
+# get the list of replication controllers
+$ kubectl get rc
+
+# delete a replication controller
+$ kubectl delete rc <rc-name>
+
+# get the list of pods
+$ kubectl get pods
+
+# delete a pod
+$ kubectl delete pod <pod-name>
+```
