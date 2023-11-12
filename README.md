@@ -1,6 +1,16 @@
 # webapp-docker-k8s
 
+In this assignment, we will deploy a web application on Kubernetes using Docker
+containers. We will start by containerizing the application using Docker, create
+a persistence volume, and push the image to Docker Hub. Then, deploy the
+container on a local Kubernetes cluster using Minikube and then deploy it on AWS
+EKS. We will also explore various Kubernetes features such as a replication
+controller, health monitoring, rolling updates, and alerting.
+
 ## To-do app (Flask + MongoDB)
+
+Fixed some dependency issues in the `requirements.txt` file and updated the code
+of the [todo flask](./todo/) app to work.
 
 Create a virtual environment, install the dependencies and run the app
 ```bash
@@ -37,7 +47,8 @@ $ docker build -t todo-flask-mongodb -f ./docker/Dockerfile .
 $ docker run -p 5000:5000 todo-flask-mongodb
 ```
 
-Run the application and the database together using docker-compose
+Run the application and the database together using
+[docker-compose](https://docs.docker.com/compose/)
 ```bash
 $ docker-compose up
 ```
@@ -86,7 +97,7 @@ $ docker-compose up --build
 
 Create a repository
 [vchrombie/todo-flask-mongodb](https://hub.docker.com/repository/docker/vchrombie/todo-flask-mongodb)
-on Docker Hub and push the image
+on [Docker Hub](https://www.docker.com/products/docker-hub/) and push the image
 ```bash
 $ docker tag todo-flask-mongodb:latest vchrombie/todo-flask-mongodb:latest
 $ docker push vchrombie/todo-flask-mongodb:latest
@@ -180,7 +191,7 @@ Create two IAM roles, and assigned the required policies to them.
     - `AmazonEKSWorkerNodePolicy`
     - `AmazonEC2FullAccess`
 
-Create an EKS cluster using eksctl
+Create an EKS cluster using `eksctl`
 ```bash
 $ eksctl create cluster --name todo-flask-mongodb --region us-east-1 --nodegroup-name standard-workers --node-type t2.medium --nodes 1
 ```
@@ -298,8 +309,8 @@ $ kubectl delete pod <pod-name>
 
 ## Rolling Update Strategy
 
-Update the deployment for the todo-flask app to include the rolling update
-configuration and a new image
+Update the deployment for the todo-flask app to include the [rolling update
+configuration](https://kubernetes.io/docs/tutorials/kubernetes-basics/update/update-intro/)
 ```yaml
   strategy:
     type: RollingUpdate
