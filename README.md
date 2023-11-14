@@ -41,6 +41,8 @@ $ brew services start mongodb-community@4.4
 Install [docker (docker desktop) and
 docker-compose](https://docs.docker.com/desktop/)
 
+Wrote a [Dockerfile](./docker/Dockerfile) to build the image for the todo-flask
+
 Build the image and run the container
 ```bash
 $ docker build -t todo-flask-mongodb -f ./docker/Dockerfile .
@@ -391,7 +393,8 @@ Apply the deployment
 $ kubectl apply -f k8s/flask-deployment.yml
 ```
 
-Update the code of the [todo-flask app](./todo/app.py) to simulate the verification of the liveness and readiness
+Update the code of the [todo-flask app](./todo/app.py) to simulate the
+verification of the liveness and readiness
 
 Both the liveness and readiness endpoints return a `200 OK` response \
 docker image `vchrombie/todo-flask-mongodb:live-ready`
@@ -444,3 +447,5 @@ $ kubectl describe pods | grep -i ready
 # check the available endpoints
 $ kubectl describe svc | grep Endpoints
 ```
+
+## Alerting
